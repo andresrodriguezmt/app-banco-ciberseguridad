@@ -16,10 +16,39 @@
     <body style="background-color: rgb(255,255,255);">
 
         <script>
-            // Recarga la página cada 2 segundos
-            setInterval(function() {
-                window.location.reload();
-            }, 5000);
+            const empleadoId = /*[[${empleado.idEmpleado}]]*/ null;
+
+            async function actualizarSoloTablas() {
+                try {
+                    const response = await fetch(window.location.href);
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const nuevasTablas = doc.querySelectorAll('.container table');
+                    const tablasActuales = document.querySelectorAll('.container table');
+
+                    nuevasTablas.forEach((nuevaTabla, index) => {
+                        if (tablasActuales[index]) {
+                            tablasActuales[index].innerHTML = nuevaTabla.innerHTML;
+                        }
+                    });
+
+                    const indicador = document.getElementById('indicador-actualizacion');
+                    if (indicador) {
+                        indicador.style.opacity = '1';
+                        setTimeout(() => {
+                            indicador.style.opacity = '0';
+                        }, 500);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            setInterval(actualizarSoloTablas, 10000);
+
+            actualizarSoloTablas();
         </script>
 
         <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body">

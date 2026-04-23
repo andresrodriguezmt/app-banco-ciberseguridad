@@ -16,10 +16,79 @@
     <body style="background-color: rgb(255,255,255);">
 
         <script>
-            // Recarga la página cada 2 segundos
-            setInterval(function() {
-                window.location.reload();
-            }, 2500);
+            const clienteId = /*[[${cliente.idCliente}]]*/ null;
+
+            async function actualizarSoloTablas() {
+                try {
+                    const tablas = document.querySelectorAll('.container table');
+                    tablas.forEach(tabla => {
+                        tabla.classList.add('actualizando');
+                    });
+
+                    const response = await fetch(window.location.href);
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const nuevosTbody = doc.querySelectorAll('.container tbody');
+                    const tbodyActuales = document.querySelectorAll('.container tbody');
+
+                    nuevosTbody.forEach((nuevoTbody, index) => {
+                        if (tbodyActuales[index]) {
+                            tbodyActuales[index].innerHTML = nuevoTbody.innerHTML;
+                        }
+                    });
+
+                    const indicador = document.getElementById('indicador-actualizacion');
+                    if (indicador) {
+                        indicador.style.opacity = '1';
+                        setTimeout(() => {
+                            indicador.style.opacity = '0';
+                        }, 500);
+                    }
+
+                } catch (error) {
+                    console.error('Error al actualizar:', error);
+                    const errorMsg = document.getElementById('error-mensaje');
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                        setTimeout(() => {
+                            errorMsg.style.display = 'none';
+                        }, 3000);
+                    }
+                } finally {
+                    setTimeout(() => {
+                        const tablas = document.querySelectorAll('.container table');
+                        tablas.forEach(tabla => {
+                            tabla.classList.remove('actualizando');
+                        });
+                    }, 300);
+                }
+            }
+
+            setInterval(actualizarSoloTablas, 10000);
+
+            actualizarSoloTablas();
+
+           document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    actualizarSoloTablas();
+                }
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
+                    e.preventDefault();
+                    actualizarSoloTablas();
+                    const indicador = document.getElementById('indicador-actualizacion');
+                    if (indicador) {
+                        indicador.style.opacity = '1';
+                        setTimeout(() => {
+                            indicador.style.opacity = '0';
+                        }, 1000);
+                    }
+                }
+            });
         </script>
 
         <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body">

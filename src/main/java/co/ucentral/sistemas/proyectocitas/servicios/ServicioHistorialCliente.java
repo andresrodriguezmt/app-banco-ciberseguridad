@@ -89,7 +89,13 @@ public class ServicioHistorialCliente implements OperacionesHistorialCliente {
                     .cantidadAtendido(reporte.getCantidadAtencion())
                     .build();
         }else {
-            return null;
+            return ReporteEmpleadoCantidadAtendidoDto
+                    .builder()
+                    .empleado("Sin datos")
+                    .sede("Sin datos")
+                    .servicio("Sin datos")
+                    .cantidadAtendido(0)
+                    .build();
         }
     }
 
@@ -107,7 +113,13 @@ public class ServicioHistorialCliente implements OperacionesHistorialCliente {
                     .cantidadAtendido(reporte.getCantidadAtencion())
                     .build();
         }else {
-            return null;
+            return ReporteEmpleadoCantidadAtendidoDto
+                    .builder()
+                    .empleado("Sin datos")
+                    .sede("Sin datos")
+                    .servicio("Sin datos")
+                    .cantidadAtendido(0)
+                    .build();
         }
     }
 }
